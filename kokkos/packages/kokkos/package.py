@@ -23,7 +23,7 @@ class Kokkos(CMakePackage, CudaPackage):
      'openmp'                         : [False, 'Whether to build OpenMP backend'],
      'pthread'                        : [False, 'Whether to build Pthread backend'],
      'rocm'                           : [False, 'Whether to build AMD ROCm backend'],
-     'serial'                         : [False, 'Whether to build serial backend'],
+     'serial'                         : [True,  'Whether to build serial backend'],
     }
 
     tpls_variants = {
@@ -195,10 +195,17 @@ class Kokkos(CMakePackage, CudaPackage):
       for opt in cmake_options:
         enableStr = "+%s" % opt
         optUC = opt.upper()
+        optName = "Kokkos_%s_%s" % (cmake_prefix, optUC)
+        option = None
         if enableStr in self.spec:
-          option = "-DKokkos_%s_%s=ON" % (cmake_prefix,optUC)
-          if not option in spack_options:
-            spack_options.append(option)
+          option = "-D%s=ON" % optName
+        else:
+          #explicitly turn off if not enabled
+          #this avoids any confusing implicit defaults
+          #that come from the CMake
+          option = "-D%s=OFF" % optName
+        if not option in spack_options:
+          spack_options.append(option)
 
     def setup_dependent_package(self, module, dependent_spec):
       try:
