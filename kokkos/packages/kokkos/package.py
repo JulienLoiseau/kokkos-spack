@@ -17,6 +17,9 @@ class Kokkos(CMakePackage, CudaPackage):
     version('master',  branch='master')
     version('3.0', url="https://github.com/kokkos/kokkos/archive/3.0.00.tar.gz",
             sha256="c00613d0194a4fbd0726719bbed8b0404ed06275f310189b3493f5739042a92b")
+    version('3.1', url="https://github.com/kokkos/kokkos/archive/3.1.00.tar.gz",
+            sha256="b935c9b780e7330bcb80809992caa2b66fd387e3a1c261c955d622dae857d878",
+            default=True)
 
     devices_variants = {
      'cuda'                           : [False, 'Whether to build CUDA backend'],

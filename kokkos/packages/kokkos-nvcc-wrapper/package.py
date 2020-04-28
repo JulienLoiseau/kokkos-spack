@@ -12,9 +12,11 @@ class KokkosNvccWrapper(CMakePackage):
        'full' C++ compiler that accepts all flags"""
 
     homepage = "https://github.com/kokkos/kokkos"
-    git      = "git@github.com:jjwilke/kokkos-nvcc-wrapper.git"
+    git      = "https://github.com/jjwilke/kokkos-nvcc-wrapper.git"
 
-    version('old',    branch='old-behavior')
+    version('3.1', url='https://github.com/jjwilke/kokkos-nvcc-wrapper/archive/3.1.tar.gz',
+            sha256="dde414b66f355af7bb3ea2bb412152397ed2164328b8b09e977d654d06d9d313",
+            default=True)
     version('master', branch='master')
 
     variant("mpi", default=True, description="use with MPI as the underlying compiler")
