@@ -11,7 +11,7 @@ class KokkosKernelsTutorial(CMakePackage):
     for small matrices, that can be used in larger Kokkos parallel routines"""
 
     homepage = "https://github.com/kokkos/kokkos-kernels"
-    git      = "https://github.com/kokkos/kokkos-kernels.git"
+    git = "https://github.com/kokkos/kokkos-kernels.git"
 
     version('master',  branch='master', preferred=True)
     version('develop', branch='develop')
@@ -19,9 +19,9 @@ class KokkosKernelsTutorial(CMakePackage):
     depends_on("kokkos-kernels")
 
     def cmake_args(self):
-      spec = self.spec
-      options = []
+        spec = self.spec
+        options = []
 
-      options.append("-DKokkosKernels_ROOT=%s" % spec["kokkos-kernels"].prefix)
-      return options
-
+        options.append("-DKokkosKernels_ROOT=%s" %
+                       spec["kokkos-kernels"].prefix)
+        return options
