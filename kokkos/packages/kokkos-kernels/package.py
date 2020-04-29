@@ -36,16 +36,17 @@ class KokkosKernels(CMakePackage, CudaPackage):
         depends_on("kokkos+%s" % backend.lower(), when="+%s" % backend.lower())
 
     space_etis = {
-        "execspace_cuda": ('auto', ""),
-        "execspace_openmp": ('auto', ""),
-        "execspace_threads": ('auto', ""),
-        "execspace_serial": ('auto', ""),
-        "memspace_cudauvmspace": ('auto', ""),
-        "memspace_cudaspace": ('auto', ""),
+        "execspace_cuda": ('auto', "", "cuda"),
+        "execspace_openmp": ('auto', "", "openmp"),
+        "execspace_threads": ('auto', "", "pthread"),
+        "execspace_serial": ('auto', "", "serial"),
+        "memspace_cudauvmspace": ('auto', "", "cuda"),
+        "memspace_cudaspace": ('auto', "", "cuda"),
     }
     for eti in space_etis:
-        deflt, descr = space_etis[eti]
+        deflt, descr, backend_required = space_etis[eti]
         variant(eti, default=deflt, description=descr)
+        depends_on("kokkos+%s" % backend_required, when="+%s" % eti)
 
     numeric_etis = {
         "ordinals": ("int",        "ORDINAL_",  # default, cmake name
