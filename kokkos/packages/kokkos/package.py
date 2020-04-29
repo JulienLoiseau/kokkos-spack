@@ -26,9 +26,10 @@ class Kokkos(CMakePackage, CudaPackage):
         'cuda': [False, 'Whether to build CUDA backend'],
         'openmp': [False, 'Whether to build OpenMP backend'],
         'pthread': [False, 'Whether to build Pthread backend'],
-        'rocm': [False, 'Whether to build AMD ROCm backend'],
         'serial': [True,  'Whether to build serial backend'],
+        'hip': [False, 'Whether to build HIP backend'],
     }
+    conflicts("+hip", when="@:3.0")
 
     tpls_variants = {
         'hpx': [False, 'Whether to enable the HPX library'],
@@ -101,7 +102,8 @@ class Kokkos(CMakePackage, CudaPackage):
         'skx': [False, 'Optimize for the Skylake architecture'],
         'snb': [False, 'Optimize for the Sandybridge architecture'],
         'turing75': [False, 'Optimize for the TURING75 architecture'],
-        'vega': [False, 'Optimize for the VEGA architecture'],
+        'vega900': [False, 'Optimize for the VEGA900 architecture'],
+        'vega906': [False, 'Optimize for the VEGA906 architecture'],
         'volta70': [False, 'Optimize for the VOLTA70 architecture'],
         'volta72': [False, 'Optimize for the VOLTA72 architecture'],
         'wsm': [False, 'Optimize for the Westmere architecture'],
