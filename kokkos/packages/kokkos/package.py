@@ -169,8 +169,8 @@ class Kokkos(CMakePackage, CudaPackage):
 
     variant("std", default="11", values=["11", "14", "17", "20"], multi=False)
     # nvcc does not currently work with C++17 or C++20
-    conflicts("+cuda", when="+wrapper std=17")
-    conflicts("+cuda", when="+wrapper std=20")
+    conflicts("+cuda", when="std=17")
+    conflicts("+cuda", when="std=20")
 
     def append_args(self, cmake_prefix, cmake_options, spack_options):
         for opt in cmake_options:
