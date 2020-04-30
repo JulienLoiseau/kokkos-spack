@@ -141,6 +141,7 @@ class Kokkos(CMakePackage, CudaPackage):
         "75": 'turing75',
     }
     cuda_arches = spack_cuda_arch_map.values()
+    conflicts("+cuda", when="cuda_arch=none")
 
     devices_values = list(devices_variants.keys())
     for dev in devices_variants:
