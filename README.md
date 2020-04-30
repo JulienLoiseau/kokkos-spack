@@ -137,18 +137,30 @@ We recommend instead adding for each system you build on a Kokkos configuration 
 For a Xeon + Volta system, this could look like:
 ````
  kokkos:
-  variants: +cuda +openmp +volta70 +cuda_lambda +wrapper ^cuda@10.1
+  variants: +cuda +openmp +cuda_lambda +wrapper ^cuda@10.1 cuda_arch=70
   compiler: [gcc@7.2.0]
 ````
-which gives the "best" Kokkos configuration as CUDA+OpenMP optimized for a Volta 7.0 architecture using CUDA 10.1.
+which gives the "best" Kokkos configuration as CUDA+OpenMP optimized for a Volta 70 architecture using CUDA 10.1.
 It also enables support for CUDA Lambdas.
 The `+wrapper` option tells Kokkos to build with the special `nvcc_wrapper` (more below).
-For a Haswell system, this might look like:
+Note here that we use the built-in `cuda_arch` variant of Spack to specify the archicture.
+For a Haswell system, we use
 ````
  kokkos:
-  variants: +openmp +hsw std=14
+  variants: +openmp std=14 target=haswell
   compiler: [intel@18]
 ````
+which uses the built-in microarchitecture variants of Spack.
+Consult the Spack documentation for more details of Spack microarchitectures
+and CUDA architectures.
+Spack does not currently provide an AMD GPU microarchitecture option.
+If building for HIP or an AMD GPU, Kokkos provides an `amd_gpu_arch` similar to `cuda_arch`.
+````
+ kokkos:
+  variants: +hip amd_gpu_arch=vega900
+````
+Note: there is currently no support for the `hipcc` compiler in Spack.
+
 Without an optimal default in your `packages.yaml` file, it is highly likely that the default Kokkos configuration you get will not be what you want.
 For example, CUDA is not enabled by default (there is no easy logic to conditionally activate this for CUDA-enabled systems).
 If you don't specify a CUDA build variant in a `packages.yaml` and you build your Kokkos-dependent project:

@@ -70,44 +70,15 @@ class Kokkos(CMakePackage, CudaPackage):
         'tests': [False, 'Build for tests'],
     }
 
-    arch_variants = {
-        'amdavx': [False, 'Optimize for the AMDAVX architecture'],
-        'armv80': [False, 'Optimize for the ARMV80 architecture'],
-        'armv81': [False, 'Optimize for the ARMV81 architecture'],
-        'armv8_thunderx': [False, 'Optimize for the ARMV8_THUNDERX'],
-        'armv8_tx2': [False, 'Optimize for the ARMV8_TX2 architecture'],
-        'bdw': [False, 'Optimize for the Broadwell architecture'],
-        'bgq': [False, 'Optimize for the Blue Gene/Q architecture'],
-        'carrizo': [False, 'Optimize for the CARRIZO architecture'],
-        'epyc': [False, 'Optimize for the EPYC architecture'],
-        'fiji': [False, 'Optimize for the FIJI architecture'],
-        'gfx901': [False, 'Optimize for the GFX901 architecture'],
-        'hsw': [False, 'optimize for architecture HSW'],
-        'kaveri': [False, 'Optimize for the KAVERI architecture'],
-        'kepler30': [False, 'Optimize for the KEPLER30 architecture'],
-        'kepler32': [False, 'Optimize for the KEPLER32 architecture'],
-        'kepler35': [False, 'Optimize for the KEPLER35 architecture'],
-        'kepler37': [False, 'Optimize for the KEPLER37 architecture'],
-        'knc': [False, 'Optimize for the Knights Corner architecture'],
-        'knl': [False, 'Optimize for the Knights Landing architecture'],
-        'maxwell50': [False, 'Optimize for the MAXWELL50 architecture'],
-        'maxwell52': [False, 'Optimize for the MAXWELL52 architecture'],
-        'maxwell53': [False, 'Optimize for the MAXWELL53 architecture'],
-        'pascal60': [False, 'Optimize for the PASCAL60 architecture'],
-        'pascal61': [False, 'Optimize for the PASCAL61 architecture'],
-        'power7': [False, 'Optimize for the POWER7 architecture'],
-        'power8': [False, 'Optimize for the POWER8 architecture'],
-        'power9': [False, 'Optimize for the POWER9 architecture'],
-        'ryzen': [False, 'Optimize for the RYZEN architecture'],
-        'skx': [False, 'Optimize for the Skylake architecture'],
-        'snb': [False, 'Optimize for the Sandybridge architecture'],
-        'turing75': [False, 'Optimize for the TURING75 architecture'],
-        'vega900': [False, 'Optimize for the VEGA900 architecture'],
-        'vega906': [False, 'Optimize for the VEGA906 architecture'],
-        'volta70': [False, 'Optimize for the VOLTA70 architecture'],
-        'volta72': [False, 'Optimize for the VOLTA72 architecture'],
-        'wsm': [False, 'Optimize for the Westmere architecture'],
-    }
+    amd_gpu_arches = [
+        'fiji',
+        'gfx901',
+        'vega900',
+        'vega906',
+    ]
+    variant("amd_gpu_arch", default='none', values=amd_gpu_arches,
+            description="AMD GPU architecture")
+    conflicts("+hip", when="amd_gpu_arch=none")
 
     spack_micro_arch_map = {
         "aarch64": "",
@@ -122,12 +93,12 @@ class Kokkos(CMakePackage, CudaPackage):
         "x86_64": "",
         "thunderx2": "THUNDERX2",
         "k10": None,
-        "zen": "RYZEN",
+        "zen": "ZEN",
         "bulldozer": "",
         "piledriver": "",
-        "zen2": "RYZEN",
-        "steamroller": "",
-        "excavator": "",
+        "zen2": "ZEN2",
+        "steamroller": "KAVERI",
+        "excavator": "CARIZO",
         "a64fx": "",
         "power7": "POWER7",
         "power8": "POWER8",
@@ -170,17 +141,6 @@ class Kokkos(CMakePackage, CudaPackage):
         "75": 'turing75',
     }
     cuda_arches = spack_cuda_arch_map.values()
-
-    arch_values = list(arch_variants.keys())
-    allowed_arch_values = arch_values[:]
-    for arch in arch_values:
-        for cuda_arch in cuda_arches:
-            if cuda_arch in arch:
-                conflicts("+%s" % arch, when="~cuda",
-                          msg="Must specify +cuda for CUDA backend to use "
-                              "GPU architecture %s" % arch)
-        dflt, desc = arch_variants[arch]
-        variant(arch, default=dflt, description=desc)
 
     devices_values = list(devices_variants.keys())
     for dev in devices_variants:
@@ -251,6 +211,12 @@ class Kokkos(CMakePackage, CudaPackage):
         kokkos_microarch_name = self.spack_micro_arch_map[spec.target.name]
         if kokkos_microarch_name:
             spack_microarches.append(kokkos_microarch_name)
+
+        for arch in amd_gpu_arches:
+            keyval = "amd_gpu_arch=%s" % arch
+            if keyval in spec:
+                spack_microarches.append(arch)
+
         for arch in spack_microarches:
             options.append("-DKokkos_ARCH_%s=ON" % arch.upper())
 
